@@ -1,0 +1,33 @@
+Commands
+
+1. Generate a Private and Public Key Pair
+-Generate a Private Key:
+openssl genpkey -algorithm RSA -out private_key.pem -aes256
+-Extract the Public Key from the Private Key:
+openssl rsa -pubout -in private_key.pem -out public_key.pe
+-Verify the Private Key:
+openssl rsa -in private_key.pem -text -noout
+-Verify the Public Key:
+openssl rsa -pubin -in public_key.pem -text -noout
+
+2.Generate a Certificate Signing Request (CSR)
+-Generate the CSR Using the Private Key:
+openssl req -new -key private_key.pem -out certificate_request.csr
+-Verify the CSR:
+openssl req -text -noout -verify -in certificate_request.csr
+
+3. Create a Self-Signed Certificate
+-Generate a Self-Signed Certificate:
+openssl x509 -req -days 365 -in certificate_request.csr -signkey private_key.pem -out self_signed_certificate.crt
+-Verify the Self-Signed Certificate:
+openssl x509 -in self_signed_certificate.crt -text -noout
+
+4. Act as a Certification Authority (CA)
+-Generate the CA Private Key:
+openssl genpkey -algorithm RSA -out ca_private_key.pem -aes256
+-Create the CA Self-Signed Certificate:
+openssl req -new -x509 -days 365 -key ca_private_key.pem -out ca_certificate.crt
+-Sign the CSR Using the CA Certificate:
+openssl x509 -req -in certificate_request.csr -CA ca_certificate.crt -CAkey ca_private_key.pem -CAcreateserial -out issued_certificate.crt -days 365
+-Verify the CA-Signed Certificate:
+openssl x509 -in issued_certificate.crt -text -noout
